@@ -45,12 +45,25 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Outfit', 'Hind Madurai', system-ui, sans-serif;
-  background: linear-gradient(135deg, #FFFDF6 0%, #FFF9EA 50%, #FFF3D6 100%);
+  background: #0D0001;
   background-attachment: fixed;
-  color: var(--slate);
+  color: var(--grey-100);
   overflow-x: hidden;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Subtle repeating star watermark - sits under animated-bg layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 61,39 98,39 68,61 79,95 50,73 21,95 32,61 2,39 39,39' fill='none' stroke='rgba(255,255,255,0.015)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  z-index: -20;
+  pointer-events: none;
 }
 
 img { max-width: 100%; display: block; }
@@ -76,19 +89,19 @@ img { max-width: 100%; display: block; }
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(13, 0, 1, 0.88);
   backdrop-filter: blur(24px) saturate(1.8);
   -webkit-backdrop-filter: blur(24px) saturate(1.8);
   border-top: 4px solid;
   border-image: linear-gradient(90deg, var(--red) 0%, var(--gold) 50%, var(--red) 100%) 1;
-  border-bottom: 1px solid rgba(198, 21, 27, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(254, 206, 8, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(254, 206, 8, 0.1);
   transition: var(--transition);
 }
 #main-header.scrolled {
-  background: rgba(255,255,255,0.96);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
-  border-color: rgba(198, 21, 27, 0.15);
+  background: rgba(10, 0, 0, 0.96);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .header-inner {
@@ -144,13 +157,13 @@ img { max-width: 100%; display: block; }
 .logo-title {
   font-weight: 900;
   font-size: 0.95rem;
-  color: var(--red);
+  color: var(--white);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 .logo-sub {
   font-size: 0.6rem;
-  color: var(--grey-600);
+  color: var(--gold);
   font-weight: 600;
 }
 
@@ -160,7 +173,7 @@ img { max-width: 100%; display: block; }
   gap: 6px;
 }
 .nav-link {
-  color: var(--grey-800);
+  color: var(--white);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.78rem;
@@ -173,7 +186,7 @@ img { max-width: 100%; display: block; }
 }
 .nav-link:hover {
   background: rgba(254, 206, 8, 0.15);
-  color: var(--red);
+  color: var(--gold);
   transform: translateY(-1px);
 }
 .nav-link.active {
@@ -286,17 +299,14 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   padding: 120px 0 60px;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(254, 206, 8, 0.25) 0%, transparent 60%),
-    radial-gradient(circle at 80% 70%, rgba(254, 206, 8, 0.15) 0%, transparent 60%),
-    linear-gradient(135deg, #9B1015 0%, #C6151B 50%, #8C0A0E 100%);
+  background: transparent;
   overflow: hidden;
 }
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0.35) 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.3) 100%);
   z-index: 1;
   pointer-events: none;
 }

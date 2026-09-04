@@ -250,9 +250,12 @@
       <div class="vision-grid">
         <!-- MLA Portrait -->
         <div class="mla-portrait-wrap" data-reveal>
-          <div class="mla-portrait-frame">
+          <div class="mla-portrait-frame" style="position:relative; overflow:hidden; border-radius: var(--radius-lg);">
+            <!-- TVK Flag Background -->
+            <div style="position:absolute; inset:0; background: url('/tvk_flag_bg.jpg') center/cover no-repeat; z-index:0;"></div>
             <div class="mla-portrait-glow"></div>
-            <img src="/Nirmlatvk.png" alt="C.T.R. Nirmal Kumar – Thiruparankundram MLA" class="mla-portrait-img">
+            <!-- Clean photo on top - no blend mode -->
+            <img src="/Nirmlatvk.png" alt="C.T.R. Nirmal Kumar – Thiruparankundram MLA" class="mla-portrait-img" style="position:relative; z-index:2; filter: contrast(1.05) brightness(1.05); display:block; width:100%;">
           </div>
           <div class="mla-identity-card">
             <div class="mla-party-stripe"></div>
@@ -627,5 +630,7 @@
       }, 2000);
     });
   </script>
+
+  <script src="/animated-bg.js" defer></script>
 </body>
 </html>
