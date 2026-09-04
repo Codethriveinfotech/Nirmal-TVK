@@ -3,6 +3,7 @@ import session from 'express-session';
 import Database from 'better-sqlite3';
 import cors from 'cors';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -72,14 +73,27 @@ let instagramCache = {
   data: []
 };
 
+const activeAdminTokens = new Set();
+
+const getAuthToken = (req) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7).trim();
+  }
+  return req.headers['x-auth-token'] || null;
+};
+
 // Middleware to check if logged in
 const requireAuth = (req, res, next) => {
-  if (req.session && req.session.isAdmin) {
+  const token = getAuthToken(req);
+  if ((req.session && req.session.isAdmin) || (token && activeAdminTokens.has(token))) {
     next();
   } else {
     res.status(401).json({ success: false, message: 'Unauthorized. Please login.' });
   }
 };
+
+
 
 function buildTrackId(id) {
   return `TVK-GR-2026-${String(id).padStart(4, '0')}`;
@@ -188,7 +202,9 @@ app.post('/api/admin/login', (req, res) => {
   
   if (username === ADMIN_USER && password === ADMIN_PASS) {
     req.session.isAdmin = true;
-    res.json({ success: true, message: 'Login successful' });
+    const token = crypto.randomUUID();
+    activeAdminTokens.add(token);
+    res.json({ success: true, message: 'Login successful', token });
   } else {
     res.status(401).json({ success: false, message: 'Invalid username or password' });
   }
@@ -196,6 +212,10 @@ app.post('/api/admin/login', (req, res) => {
 
 // API: Admin Logout
 app.post('/api/admin/logout', (req, res) => {
+  const token = getAuthToken(req);
+  if (token) {
+    activeAdminTokens.delete(token);
+  }
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ success: false, message: 'Could not log out' });
@@ -207,7 +227,8 @@ app.post('/api/admin/logout', (req, res) => {
 
 // API: Admin Check Status
 app.get('/api/admin/status', (req, res) => {
-  if (req.session && req.session.isAdmin) {
+  const token = getAuthToken(req);
+  if ((req.session && req.session.isAdmin) || (token && activeAdminTokens.has(token))) {
     res.json({ success: true, loggedIn: true });
   } else {
     res.json({ success: true, loggedIn: false });

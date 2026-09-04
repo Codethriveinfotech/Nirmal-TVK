@@ -125,10 +125,20 @@ function setupEventListeners() {
   deleteGrievanceBtn.addEventListener('click', handleDeleteGrievance);
 }
 
+function getAuthHeaders(customHeaders = {}) {
+  const token = localStorage.getItem('tvk_admin_token');
+  const headers = { ...customHeaders };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Authentication Check Status
 async function checkAuthStatus() {
   try {
     const res = await fetch(`${API_BASE}/api/admin/status`, {
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     const data = await res.json();
@@ -146,6 +156,7 @@ async function checkAuthStatus() {
 
 // Show Login Page
 function showLogin() {
+  localStorage.removeItem('tvk_admin_token');
   loginContainer.style.display = 'flex';
   dashboardContainer.style.display = 'none';
   logoutBtn.style.display = 'none';
@@ -185,6 +196,9 @@ async function handleLogin(e) {
     const data = await res.json();
     
     if (data.success) {
+      if (data.token) {
+        localStorage.setItem('tvk_admin_token', data.token);
+      }
       showDashboard();
     } else {
       showLoginError(data.message || 'Invalid username or password');
@@ -211,11 +225,12 @@ async function handleLogout() {
   try {
     await fetch(`${API_BASE}/api/admin/logout`, { 
       method: 'POST',
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
-    showLogin();
   } catch (error) {
     console.error('Logout error:', error);
+  } finally {
     showLogin();
   }
 }
@@ -234,6 +249,7 @@ async function fetchGrievances() {
   
   try {
     const res = await fetch(`${API_BASE}/api/admin/grievances`, {
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     if (res.status === 401) {
@@ -425,7 +441,7 @@ async function handleUpdateGrievance(e) {
   try {
     const res = await fetch(`${API_BASE}/api/admin/grievances/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ status, admin_notes }),
       credentials: 'include'
     });
@@ -459,6 +475,7 @@ async function handleDeleteGrievance() {
   try {
     const res = await fetch(`${API_BASE}/api/admin/grievances/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     
